@@ -1,0 +1,111 @@
+<!--
+@license
+Copyright 2016 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`<time-selector>` lets you manage a selection based on time. 
+
+Example:
+
+    <time-selector selected="{{selected}}">
+      <time-range start="11.5" end="14" name="lunch"></time-range>
+      <time-range start="18" end="22" name="dinner"></time-range>
+    </time-selector>
+
+    <paper-tabs attr-for-selected="name" selected="{{selected}}">
+      <paper-tab name="lunch">Lunch</paper-tab>
+      <paper-tab name="dinner">Dinner</paper-tab>
+    </paper-tabs>
+
+Updating either the reference time or timezone offset will trigger the selected
+value to be updated.
+
+The `start` and `end` attributes of a `<time-range>` are specified in a 24 hour
+format.
+
+@demo demo/index.html
+-->
+<dom-module id="time-selector">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'time-selector',
+
+      properties: {
+        /**
+         * The name attribute of the first matching time range.
+         */
+        selected: {
+          type: String,
+          notify: true,
+          computed: '_computeSelected(refTime, timezoneOffset)'
+        },
+
+        /**
+         * The reference timestamp, in milliseconds since the epoch to use.
+         * @default Date.now()
+         */
+        refTime: {
+          type: Number,
+          value: () => Date.now()
+        },
+
+        /**
+         * The timezone offset to use, in minutes, for selecting against.
+         * @default new Date().getTimezoneOffset()
+         */
+        timezoneOffset: {
+          type: Number,
+          value: () => new Date().getTimezoneOffset()
+        }
+      },
+
+      _computeSelected: function(refTime, timezoneOffset) {
+        const offset = timezoneOffset - new Date().getTimezoneOffset();
+        const date = new Date(refTime + offset * 60 * 1000);
+        const hours = date.getHours() +
+                      date.getMinutes() / 60 +
+                      date.getSeconds() / 3600;
+
+        return Polymer.dom(this).querySelectorAll('time-range')
+          .map(({attributes: {start, end, name}}) => ({
+            start: start ? Number(start.value) : 0,
+            end: end ? Number(end.value) : 24,
+            name: name.value
+          }))
+          .filter(({start, end}) => {
+            // Handle time ranges like 22 - 4    
+            if (end < start) {
+              return !(end <= hours && hours <= start);
+            }
+
+            return start <= hours && hours <= end;
+          })
+          .map(({name}) => name)
+          .shift();
+      }
+    });
+  </script>
+</dom-module>

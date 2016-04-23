@@ -1,0 +1,191 @@
+<!--
+@license
+Copyright 2016 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../time-selector.html">
+  </head>
+  <body>
+    <test-fixture id="reverse">
+      <template>
+        <time-selector>
+          <time-range start="22" end="4" name="first"></time-range>
+        </time-selector>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="forward">
+      <template>
+        <time-selector>
+          <time-range start="10" end="16" name="first"></time-range>
+        </time-selector>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="multiple">
+      <template>
+        <time-selector>
+          <time-range start="10" end="16" name="first"></time-range>
+          <time-range start="12" end="22" name="second"></time-range>
+          <time-range name="default"></time-range>
+        </time-selector>
+      </template>
+    </test-fixture>
+
+    <script>
+      const MS_PER_MINUTE = 60 * 1000;
+      const MS_PER_HOUR = MS_PER_MINUTE * 60;
+
+      describe('<time-selector>', () => {
+        let clock;
+        let timezoneOffset;
+
+        beforeEach(() => {
+          clock = sinon.useFakeTimers();
+          timezoneOffset = new Date().getTimezoneOffset();
+          clock.tick(timezoneOffset * MS_PER_MINUTE);
+        });
+
+        afterEach(() => {
+          clock.restore();
+        });
+        
+        describe('reverse ranges', () => {
+          const getFixture = () => fixture('reverse');
+
+          it('should not be selected before', () => {
+            clock.tick(-2.01 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            expect(el.selected).to.be.undefined;
+          });
+
+          it('should be selected at the start', () => {
+            clock.tick(-1.99 * MS_PER_HOUR);
+            const el = getFixture();
+
+            expect(el.selected).to.equal('first');
+          });
+
+          it('should be selected at the end', () => {
+            clock.tick(3.99 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            expect(el.selected).to.equal('first');
+          });
+
+          it('should not be selected after', () => {
+            clock.tick(4.01 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            expect(el.selected).to.be.undefined;
+          });
+        });
+
+        describe('forward ranges', () => {
+          const getFixture = () => fixture('forward');
+
+          it('should not be selected before', () => {
+            clock.tick(9.99 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            expect(el.selected).to.be.undefined;
+          });
+
+          it('should be selected at the start', () => {
+            clock.tick(10.01 * MS_PER_HOUR);
+            const el = getFixture();
+
+            expect(el.selected).to.equal('first');
+          });
+
+          it('should be selected at the end', () => {
+            clock.tick(15.99 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            assert.equal(el.selected, 'first');
+            expect(el.selected).to.equal('first');
+          });
+
+          it('should not be selected after', () => {
+            clock.tick(16.01 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            expect(el.selected).to.be.undefined;
+          });
+        });
+
+        describe('multiple ranges', () => {
+          const getFixture = () => fixture('multiple');
+
+          it('should select the first match', () => {
+            clock.tick(14.01 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            expect(el.selected).to.equal('first');
+          });
+
+          it('should select subsequent items', () => {
+            clock.tick(16.01 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            expect(el.selected).to.equal('second');
+          });
+
+          it('should select a default if none match', () => {
+            clock.tick(22.01 * MS_PER_HOUR);
+            const el = getFixture();
+            
+            expect(el.selected).to.equal('default');
+          });
+        });
+
+        describe('refTime', () => {
+          const getFixture = () => fixture('forward');
+
+          it('should update the selection', (done) => {
+            clock.tick(0 * MS_PER_HOUR);
+            const el = getFixture();
+            el.addEventListener('selected-changed', () => done());
+            el.refTime = Date.now() + 12 * MS_PER_HOUR;
+
+            expect(el.selected).to.equal('first');
+          });
+        });
+
+        describe('timezoneOffset', () => {
+          const getFixture = () => fixture('forward');
+
+          it('should update the selection', (done) => {
+            clock.tick(9 * MS_PER_HOUR);
+            const el = getFixture();
+            el.addEventListener('selected-changed', () => done());
+            el.timezoneOffset = timezoneOffset + 3 * 60;
+
+            expect(el.selected).to.equal('first');
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

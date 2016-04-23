@@ -1,0 +1,29 @@
+{
+  "name": "time-selector",
+  "version": "0.1.0",
+  "authors": [
+    "sparhami <sepandparhami@gmail.com>"
+  ],
+  "description": "An element providing a solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "time"
+  ],
+  "main": "time-selector.html",
+  "license": "BSD",
+  "homepage": "https://github.com/sparhami/time-selector",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "iron-pages": "polymerelements/iron-pages#~1.0.7",
+    "paper-tabs": "polymerelements/paper-tabs#~1.5.0"
+  }
+}

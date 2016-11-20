@@ -1,0 +1,30 @@
+{
+  "name": "time-selector",
+  "version": "0.1.0",
+  "authors": [
+    "sparhami <sepandparhami@gmail.com>"
+  ],
+  "description": "Declaratively manage selecting from time ranges.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "time"
+  ],
+  "main": "time-selector.html",
+  "license": "BSD",
+  "homepage": "https://github.com/sparhami/time-selector",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "polymerelements/iron-demo-helpers#~1.2.3",
+    "iron-pages": "polymerelements/iron-pages#~1.0.7",
+    "paper-tabs": "polymerelements/paper-tabs#~1.5.0",
+    "web-component-tester": "^4.0.0"
+  }
+}

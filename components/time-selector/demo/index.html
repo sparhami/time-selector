@@ -1,0 +1,76 @@
+<!--
+@license
+Copyright 2016 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>time-selector Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="../../iron-pages/iron-pages.html">
+    <link rel="import" href="../../paper-tabs/paper-tabs.html">
+    <link rel="import" href="../time-selector.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+      #container {
+        max-width: 600px;
+      }
+
+      paper-tabs, paper-toolbar {
+        background-color: var(--paper-blue-900);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+		<div id="container">
+			<h3>Select a tab/page with the current time</h3>
+			<demo-snippet>
+				<template is="dom-bind">
+					<time-selector selected="{{selected}}">
+						<time-range name="breakfast" start="7" end="10"></time-range>
+						<time-range name="lunch" start="11.5" end="14"></time-range>
+						<time-range name="dinner" start="18" end="22"></time-range>
+						<!-- If no other time matches, default to lunch. -->
+						<time-range name="lunch"></time-range>
+					</time-selector>
+
+					<paper-tabs attr-for-selected="name" selected="{{selected}}">
+						<paper-tab name="breakfast">Breakfast</paper-tab>
+						<paper-tab name="lunch">Lunch</paper-tab>
+						<paper-tab name="dinner">Dinner</paper-tab>
+					</paper-tabs>
+
+					<iron-pages attr-for-selected="name" selected="[[selected]]">
+						<div name="breakfast">
+							Breakfast menu
+						</div>
+						<div name="lunch">
+							Lunch menu
+						</div>
+						<div name="dinner">
+							Dinner menu
+						</div>
+					</iron-pages>
+				</template>
+			</demo-snippet>
+		</div>
+  </body>
+</html>
